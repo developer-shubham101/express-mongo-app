@@ -7,7 +7,7 @@ const companySchema = new mongoose.Schema({
   from_date: Date,
   to_date: Date,
   role: String, // New field added 
-  responsibilities: [String], // New field added
+  responsibilities: String, // New field added
   files: [{ type: Schema.Types.ObjectId, ref: 'File' }],
   projects: [{ type: Schema.Types.ObjectId, ref: 'UserExperience' }]
 });

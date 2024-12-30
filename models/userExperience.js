@@ -9,7 +9,7 @@ const userExperienceSchema = new mongoose.Schema({
   platform: String,
   about_project: String,
   technology: [String], 
-  my_responsibilities: String,
+  responsibilities: String,
 });
 
 module.exports = mongoose.model('UserExperience', userExperienceSchema);

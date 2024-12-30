@@ -8,5 +8,5 @@ export const UserExperienceSchema = new mongoose.Schema({
   to_date: Date,
   platform: String,
   technology: [String],
-  responsibilities: [String]
+  responsibilities: String
 });
