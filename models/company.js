@@ -8,8 +8,7 @@ const companySchema = new mongoose.Schema({
   to_date: Date,
   role: String, // New field added 
   responsibilities: String, // New field added
-  files: [{ type: Schema.Types.ObjectId, ref: 'File' }],
-  projects: [{ type: Schema.Types.ObjectId, ref: 'UserExperience' }]
+  files: [{ type: Schema.Types.ObjectId, ref: 'File' }], 
 });
 
 module.exports = mongoose.model('Company', companySchema);

@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Company = require('../models/company');
 const Project = require('../models/project');
+const UserExperience = require('../models/userExperience');
+const { mongo } = require('mongoose');
 
 // Create (POST request to add a new company)
 router.post('/', async (req, res) => {
@@ -17,8 +19,12 @@ router.post('/', async (req, res) => {
 // Read All (GET request to get all companies)
 router.get('/', async (req, res) => {
   try {
-    const companies = await Company.find().populate('projects').populate('files');
-    res.status(200).json(companies);
+    const companies = await Company.find().populate('files');
+    const companiesWithProjects = await Promise.all(companies.map(async (company) => {
+      const projects = await UserExperience.find({ organization: company._id });
+      return { ...company._doc, projects };
+    }));
+    res.status(200).json(companiesWithProjects); 
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -27,11 +33,13 @@ router.get('/', async (req, res) => {
 // Read Single (GET request to get a single company by ID)
 router.get('/:id', async (req, res) => {
   try {
-    const company = await Company.findById(req.params.id).populate('projects').populate('files');
+    const company = await Company.findById(req.params.id).populate('files');
     if (!company) {
       return res.status(404).json({ error: 'Company not found' });
     }
-    res.status(200).json(company);
+    let projects = await UserExperience.find({ organization: company._id });
+ 
+    res.status(200).json({ ...company._doc, projects });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

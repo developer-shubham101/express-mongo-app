@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
 // Read All (GET request to get all user experiences)
 router.get('/', async (req, res) => {
   try {
-    const userExperiences = await UserExperience.find();
+    const userExperiences = await UserExperience.find().populate('organization');
     res.status(200).json(userExperiences);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
 // Read Single (GET request to get a single user experience by ID)
 router.get('/:id', async (req, res) => {
   try {
-    const userExperience = await UserExperience.findById(req.params.id);
+    const userExperience = await UserExperience.findById(req.params.id).populate('organization');
     if (!userExperience) {
       return res.status(404).json({ error: 'User experience not found' });
     }
@@ -39,7 +39,7 @@ router.get('/:id', async (req, res) => {
 // Update (PUT request to update a user experience by ID)
 router.put('/:id', async (req, res) => {
   try {
-    const updatedUserExperience = await UserExperience.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updatedUserExperience = await UserExperience.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('organization');
     if (!updatedUserExperience) {
       return res.status(404).json({ error: 'User experience not found' });
     }
