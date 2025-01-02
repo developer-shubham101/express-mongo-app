@@ -9,13 +9,16 @@ const documentRoutes = require('./routes/document');
 const fs = require('fs');
 const app = express();
 const cors = require('cors'); // Import the cors package
+const { auth, requiredScopes } = require('express-oauth2-jwt-bearer');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
 // Middleware
 app.use(bodyParser.json());
 
 // MongoDB Connection
-mongoose.connect('mongodb://127.0.0.1:27017/cv_db', {
-
-})
+mongoose.connect('mongodb://127.0.0.1:27017/cv_db', {})
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
 
@@ -28,12 +31,27 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+
+const checkJwt = auth({
+  audience: process.env.AUTH0_AUDIENCE,
+  issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
+  tokenSigningAlg: 'RS256',
+});
+
 // Routes
-app.use('/api/users', userRoutes);
-app.use('/api/user-experiences', userExperienceRoutes);
-app.use('/api/companies', companyRoutes); 
-app.use('/api/documents', documentRoutes);
-app.use('/api/files', fileRoutes);
+app.get('/api/protected', checkJwt,
+  requiredScopes('read:current_user'),
+  (req, res) => {
+    res.json({
+      message: 'Access granted', user: req.auth.payload
+    });
+  });
+
+app.use('/api/users', checkJwt, userRoutes);
+app.use('/api/user-experiences', checkJwt, userExperienceRoutes);
+app.use('/api/companies', checkJwt, companyRoutes);
+app.use('/api/documents', checkJwt, documentRoutes);
+app.use('/api/files', checkJwt, fileRoutes);
 
 // Create uploads directory if it doesn't exist
 if (!fs.existsSync('uploads')) {
