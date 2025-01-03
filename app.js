@@ -6,6 +6,8 @@ const userExperienceRoutes = require('./routes/userExperience');
 const companyRoutes = require('./routes/company');
 const fileRoutes = require('./routes/file');
 const documentRoutes = require('./routes/document');
+const technologyRouter = require('./routes/technologies'); // Import Technology router
+
 const fs = require('fs');
 const app = express();
 const cors = require('cors'); // Import the cors package
@@ -52,6 +54,7 @@ app.use('/api/user-experiences', checkJwt, userExperienceRoutes);
 app.use('/api/companies', checkJwt, companyRoutes);
 app.use('/api/documents', checkJwt, documentRoutes);
 app.use('/api/files', checkJwt, fileRoutes);
+app.use('/api/technologies', checkJwt, technologyRouter);
 
 // Create uploads directory if it doesn't exist
 if (!fs.existsSync('uploads')) {
